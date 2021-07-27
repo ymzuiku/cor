@@ -30,7 +30,7 @@ var sourceFileReg = regexp.MustCompile("(.go|.ts|.js|.tsx|.jsx|.dart)")
 
 func main() {
 	loadFileDir()
-	runCmd(os.Args[1:])
+	os.Exit(runCmd(os.Args[1:]))
 }
 
 func loadFileDir() {
@@ -42,17 +42,18 @@ func loadFileDir() {
 	rootDirReg = regexp.MustCompile(rootDir + "/")
 }
 
-func runCmd(args []string) {
+func runCmd(args []string) int {
 	cmd := exec.Command(args[0], args[1:]...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		forrLine(string(out))
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		splitLine(string(out))
+		return 1
 	}
-	forrLine(string(out))
+	splitLine(string(out))
+	return 0
 }
 
-func forrLine(str string) {
+func splitLine(str string) {
 	lines := strings.Split(str, "\n")
 	for _, line := range lines {
 		parse(line)
